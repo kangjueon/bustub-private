@@ -116,18 +116,58 @@ class RowMatrixOperations {
   // Return nullptr if dimensions mismatch for input matrices.
   static std::unique_ptr<RowMatrix<T>> AddMatrices(std::unique_ptr<RowMatrix<T>> mat1,
                                                    std::unique_ptr<RowMatrix<T>> mat2) {
-    // TODO(P0): Add code
-
-    return std::unique_ptr<RowMatrix<T>>(nullptr);
-  }
+    // TODO(P0): Add code 
+    int rows1 = mat1->GetRows();
+    int cols1 = mat1->GetColumns();
+    int rows2 = mat2->GetRows();	
+    int cols2 = mat2->GetColumns();
+    if (rows1 != rows2 || cols1 != cols2){
+    	return std::unique_ptr<RowMatrix<T>>(nullptr);
+    }
+    
+    std::unique_ptr<RowMatrix<T>> result (new RowMatrix<T>(rows1, cols1));
+    int sumVal = 0;
+    for (int i = 0 ; i < rows1; i++){
+      for (int j = 0 ; j < cols1; j++) {
+        sumVal = mat1->GetElem(i, j) + mat2->GetElem(i, j);
+        result->SetElem(i, j, sumVal);
+      }
+    }
+    
+    return result;
+  }      
+  
+  
+  
 
   // Compute matrix multiplication (mat1 * mat2) and return the result.
   // Return nullptr if dimensions mismatch for input matrices.
   static std::unique_ptr<RowMatrix<T>> MultiplyMatrices(std::unique_ptr<RowMatrix<T>> mat1,
                                                         std::unique_ptr<RowMatrix<T>> mat2) {
     // TODO(P0): Add code
-
-    return std::unique_ptr<RowMatrix<T>>(nullptr);
+    int rows1 = mat1->GetRows();
+    int cols1 = mat1->GetColumns();
+    int rows2 = mat2->GetRows();	
+    int cols2 = mat2->GetColumns();
+    
+    
+    if (cols1 != rows2){
+      return std::unique_ptr<RowMatrix<T>>(nullptr);
+    }
+    
+    std::unique_ptr<RowMatrix<T>> result (new RowMatrix<T>(rows1, cols2));
+    int matMultVal = 0;
+    for (int i = 0 ; i < rows1; i++){
+      for (int j = 0 ; j < cols2; j++) {
+        matMultVal = 0;
+        for (int k = 0; k < cols1 ; k++){
+            matMultVal += mat1->GetElem(i, k) * mat2->GetElem(k, j);
+          }
+          result->SetElem(i, j, matMultVal);
+      }
+    }
+    return result;
+    
   }
 
   // Simplified GEMM (general matrix multiply) operation
@@ -137,7 +177,7 @@ class RowMatrixOperations {
                                                     std::unique_ptr<RowMatrix<T>> matC) {
     // TODO(P0): Add code
 
-    return std::unique_ptr<RowMatrix<T>>(nullptr);
+    return AddMatrices(MultiplyMatrices(move(matA), move(matB)), move(matC));
   }
 };
 }  // namespace bustub
